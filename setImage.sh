@@ -12,6 +12,9 @@ sudo apt-get install -y docker.io
 # Optional: Install Docker via Snap
 sudo snap install docker
 
+# Ensure createENV.sh is executable
+chmod +x ./createENV.sh
+
 # Run createENV.sh script to generate .env file
 echo "Running createENV.sh to generate .env file..."
 ./createENV.sh
