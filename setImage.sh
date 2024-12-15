@@ -12,6 +12,16 @@ sudo apt-get install -y docker.io
 # Optional: Install Docker via Snap
 sudo snap install docker
 
+# Run createENV.sh script to generate .env file
+echo "Running createENV.sh to generate .env file..."
+./createENV.sh
+
+# Check if .env file exists after running createENV.sh
+if [ ! -f ".env" ]; then
+  echo "Error: .env file not created."
+  exit 1
+fi
+
 # Prompt for Docker images
 read -p "Enter the Docker image for frontend: " frontend_image
 read -p "Enter the Docker image for node-scheduler: " node_scheduler_image
@@ -23,7 +33,7 @@ if [ -z "$frontend_image" ] || [ -z "$node_scheduler_image" ]; then
 fi
 
 # Path to docker-compose.yml (use /root explicitly)
-DOCKER_COMPOSE_FILE="/root/reac-nodejs-deployment/nginxproxy/docker-compose.yml"
+DOCKER_COMPOSE_FILE="/root/react-nodejs-deployment/nginxproxy/docker-compose.yml"
 
 # Check if docker-compose.yml exists before modifying
 if [ ! -f "$DOCKER_COMPOSE_FILE" ]; then
@@ -37,5 +47,5 @@ sed -i.bak -e "s|FRONTEND_IMAGE_PLACEHOLDER|$frontend_image|g" -e "s|NODE_SCHEDU
 echo "Updated $DOCKER_COMPOSE_FILE with frontend image: $frontend_image and node-scheduler image: $node_scheduler_image"
 
 # Navigate to nginxproxy folder and run docker-compose
-cd /root/reac-nodejs-deployment/nginxproxy || exit 1  # Exit if cd fails
+cd /root/react-nodejs-deployment/nginxproxy || exit 1  # Exit if cd fails
 sudo docker-compose up -d
