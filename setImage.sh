@@ -35,20 +35,38 @@ if [ -z "$frontend_image" ] || [ -z "$node_scheduler_image" ]; then
   exit 1
 fi
 
-# Path to docker-compose.yml (use /root explicitly)
-DOCKER_COMPOSE_FILE="/root/react-nodejs-deployment/nginxproxy/docker-compose.yml"
+# Path to docker-compose.yml files
+DOCKER_COMPOSE_NGINX_FILE="/root/react-nodejs-nginx-deployment/nginxproxy/docker-compose.yml"
+DOCKER_COMPOSE_REACT_FILE="/root/react-nodejs-nginx-deployment/reactnodejs/docker-compose.yml"
 
-# Check if docker-compose.yml exists before modifying
-if [ ! -f "$DOCKER_COMPOSE_FILE" ]; then
-  echo "Error: $DOCKER_COMPOSE_FILE not found."
+# Check if nginxproxy docker-compose.yml exists before modifying
+if [ ! -f "$DOCKER_COMPOSE_NGINX_FILE" ]; then
+  echo "Error: $DOCKER_COMPOSE_NGINX_FILE not found."
   exit 1
 fi
 
-# Update the docker-compose.yml with the provided image names
-sed -i.bak -e "s|FRONTEND_IMAGE_PLACEHOLDER|$frontend_image|g" -e "s|NODE_SCHEDULER_IMAGE_PLACEHOLDER|$node_scheduler_image|g" $DOCKER_COMPOSE_FILE
+# Check if reactnodejs docker-compose.yml exists before modifying
+if [ ! -f "$DOCKER_COMPOSE_REACT_FILE" ]; then
+  echo "Error: $DOCKER_COMPOSE_REACT_FILE not found."
+  exit 1
+fi
 
-echo "Updated $DOCKER_COMPOSE_FILE with frontend image: $frontend_image and node-scheduler image: $node_scheduler_image"
+# Update the nginxproxy docker-compose.yml with the provided image names
+sed -i.bak -e "s|FRONTEND_IMAGE_PLACEHOLDER|$frontend_image|g" $DOCKER_COMPOSE_NGINX_FILE
+echo "Updated $DOCKER_COMPOSE_NGINX_FILE with frontend image: $frontend_image"
+
+# Update the reactnodejs docker-compose.yml with the provided image names
+sed -i.bak -e "s|FRONTEND_IMAGE_PLACEHOLDER|$frontend_image|g" -e "s|NODE_SCHEDULER_IMAGE_PLACEHOLDER|$node_scheduler_image|g" $DOCKER_COMPOSE_REACT_FILE
+echo "Updated $DOCKER_COMPOSE_REACT_FILE with frontend image: $frontend_image and node-scheduler image: $node_scheduler_image"
 
 # Navigate to nginxproxy folder and run docker-compose
-cd /root/react-nodejs-deployment/nginxproxy || exit 1  # Exit if cd fails
+cd /root/react-nodejs-nginx-deployment/nginxproxy || exit 1  # Exit if cd fails
+echo "Running docker-compose in nginxproxy directory..."
 sudo docker-compose up -d
+
+# Navigate to reactnodejs folder and run docker-compose
+cd /root/react-nodejs-nginx-deployment/reactnodejs || exit 1  # Exit if cd fails
+echo "Running docker-compose in reactnodejs directory..."
+sudo docker-compose up -d
+
+echo "Docker containers started in both directories."
