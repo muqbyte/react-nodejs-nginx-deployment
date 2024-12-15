@@ -1,0 +1,36 @@
+version: "2"
+services:
+
+  frontend:
+    image: FRONTEND_IMAGE_PLACEHOLDER
+    volumes:
+      - frontend:/var/lib/vite
+    restart: always
+    environment:
+      TZ: Asia/Kuala_Lumpur
+    ports:
+      - "${DB_FRONTEND}:8600"  
+    networks:
+      - nginxproxy_default
+
+  node-scheduler:
+    image: NODE_SCHEDULER_IMAGE_PLACEHOLDER
+    container_name: node-scheduler
+    volumes:
+      - sched_data:/var/lib/node-scheduler
+    restart: always
+    environment:
+      TZ: Asia/Kuala_Lumpur
+    ports:
+      - "${DB_BACKEND}:3200"  
+    networks:
+      - default
+
+volumes:
+  frontend:
+  sched_data:
+
+networks:
+  nginxproxy_default:
+    external:
+      name: nginxproxy_default
