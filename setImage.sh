@@ -22,8 +22,14 @@ if [ -z "$frontend_image" ] || [ -z "$node_scheduler_image" ]; then
   exit 1
 fi
 
-# Path to docker-compose.yml (ensure proper expansion of ~ using $HOME)
-DOCKER_COMPOSE_FILE="$HOME/reac-nodejs-deployment/nginxproxy/docker-compose.yml"
+# Path to docker-compose.yml (use /root explicitly)
+DOCKER_COMPOSE_FILE="/root/reac-nodejs-deployment/nginxproxy/docker-compose.yml"
+
+# Check if docker-compose.yml exists before modifying
+if [ ! -f "$DOCKER_COMPOSE_FILE" ]; then
+  echo "Error: $DOCKER_COMPOSE_FILE not found."
+  exit 1
+fi
 
 # Update the docker-compose.yml with the provided image names
 sed -i.bak -e "s|FRONTEND_IMAGE_PLACEHOLDER|$frontend_image|g" -e "s|NODE_SCHEDULER_IMAGE_PLACEHOLDER|$node_scheduler_image|g" $DOCKER_COMPOSE_FILE
@@ -31,5 +37,5 @@ sed -i.bak -e "s|FRONTEND_IMAGE_PLACEHOLDER|$frontend_image|g" -e "s|NODE_SCHEDU
 echo "Updated $DOCKER_COMPOSE_FILE with frontend image: $frontend_image and node-scheduler image: $node_scheduler_image"
 
 # Navigate to nginxproxy folder and run docker-compose
-cd "$HOME/reac-nodejs-deployment/nginxproxy"
+cd /root/reac-nodejs-deployment/nginxproxy || exit 1  # Exit if cd fails
 sudo docker-compose up -d
