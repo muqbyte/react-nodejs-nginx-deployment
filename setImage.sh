@@ -12,37 +12,21 @@ sudo apt-get install -y docker.io
 # Optional: Install Docker via Snap
 sudo snap install docker
 
-# Ensure createENV.sh is executable
-chmod +x ./createENV.sh
+# Prompt for port numbers
+read -p "Enter DB_FRONTEND port number: " DB_FRONTEND
+read -p "Enter DB_BACKEND port number: " DB_BACKEND
 
-# Run createENV.sh script to generate .env file
-echo "Running createENV.sh to generate .env file..."
-./createENV.sh
-
-# Check if .env file exists after running createENV.sh
-if [ ! -f ".env" ]; then
-  echo "Error: .env file not created."
+# Validate port number input
+if [ -z "$DB_FRONTEND" ] || [ -z "$DB_BACKEND" ]; then
+  echo "Error: Both port numbers must be provided."
   exit 1
 fi
-
-# Load environment variables from .env file
-set -o allexport
-source .env
-set -o allexport -
-
-# Alternatively, load and export environment variables
-# source .env
-# export $(grep -v '^#' .env | xargs)
-
-# Check if the environment variables are correctly loaded
-echo "DB_FRONTEND=$DB_FRONTEND"
-echo "DB_BACKEND=$DB_BACKEND"
 
 # Prompt for Docker images
 read -p "Enter the Docker image for frontend: " frontend_image
 read -p "Enter the Docker image for node-scheduler: " node_scheduler_image
 
-# Validate input
+# Validate image input
 if [ -z "$frontend_image" ] || [ -z "$node_scheduler_image" ]; then
   echo "Error: Both Docker images must be provided."
   exit 1
@@ -64,9 +48,9 @@ if [ ! -f "$DOCKER_COMPOSE_REACT_FILE" ]; then
   exit 1
 fi
 
-# Update the reactnodejs docker-compose.yml with the provided image names
-sed -i.bak -e "s|FRONTEND_IMAGE_PLACEHOLDER|$frontend_image|g" -e "s|NODE_SCHEDULER_IMAGE_PLACEHOLDER|$node_scheduler_image|g" $DOCKER_COMPOSE_REACT_FILE
-echo "Updated $DOCKER_COMPOSE_REACT_FILE with frontend image: $frontend_image and node-scheduler image: $node_scheduler_image"
+# Update the reactnodejs docker-compose.yml with the provided image names and port numbers
+sed -i.bak -e "s|FRONTEND_IMAGE_PLACEHOLDER|$frontend_image|g" -e "s|NODE_SCHEDULER_IMAGE_PLACEHOLDER|$node_scheduler_image|g" -e "s|DB_FRONTEND|$DB_FRONTEND|g" -e "s|DB_BACKEND|$DB_BACKEND|g" $DOCKER_COMPOSE_REACT_FILE
+echo "Updated $DOCKER_COMPOSE_REACT_FILE with frontend image: $frontend_image, node-scheduler image: $node_scheduler_image, DB_FRONTEND: $DB_FRONTEND, and DB_BACKEND: $DB_BACKEND"
 
 # Navigate to nginxproxy folder and run docker-compose
 cd /root/react-nodejs-nginx-deployment/nginxproxy || exit 1  # Exit if cd fails
