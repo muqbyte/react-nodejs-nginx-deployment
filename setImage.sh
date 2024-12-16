@@ -25,6 +25,9 @@ if [ ! -f ".env" ]; then
   exit 1
 fi
 
+# Load environment variables from .env file
+export $(grep -v '^#' .env | xargs)
+
 # Prompt for Docker images
 read -p "Enter the Docker image for frontend: " frontend_image
 read -p "Enter the Docker image for node-scheduler: " node_scheduler_image
@@ -50,10 +53,6 @@ if [ ! -f "$DOCKER_COMPOSE_REACT_FILE" ]; then
   echo "Error: $DOCKER_COMPOSE_REACT_FILE not found."
   exit 1
 fi
-
-# Update the nginxproxy docker-compose.yml with the provided image names
-sed -i.bak -e "s|FRONTEND_IMAGE_PLACEHOLDER|$frontend_image|g" $DOCKER_COMPOSE_NGINX_FILE
-echo "Updated $DOCKER_COMPOSE_NGINX_FILE with frontend image: $frontend_image"
 
 # Update the reactnodejs docker-compose.yml with the provided image names
 sed -i.bak -e "s|FRONTEND_IMAGE_PLACEHOLDER|$frontend_image|g" -e "s|NODE_SCHEDULER_IMAGE_PLACEHOLDER|$node_scheduler_image|g" $DOCKER_COMPOSE_REACT_FILE
