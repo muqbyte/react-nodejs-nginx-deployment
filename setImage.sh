@@ -13,11 +13,11 @@ sudo apt-get install -y docker.io
 sudo snap install docker
 
 # Prompt for port numbers
-read -p "Enter DB_FRONTEND port number: " DB_FRONTEND
-read -p "Enter DB_BACKEND port number: " DB_BACKEND
+read -p "Enter FRONTEND_PORT port number: " FRONTEND_PORT
+read -p "Enter BACKEND_PORT port number: " BACKEND_PORT
 
 # Validate port number input
-if [ -z "$DB_FRONTEND" ] || [ -z "$DB_BACKEND" ]; then
+if [ -z "$FRONTEND_PORT" ] || [ -z "$BACKEND_PORT" ]; then
   echo "Error: Both port numbers must be provided."
   exit 1
 fi
@@ -49,8 +49,8 @@ if [ ! -f "$DOCKER_COMPOSE_REACT_FILE" ]; then
 fi
 
 # Update the reactnodejs docker-compose.yml with the provided image names and port numbers
-sed -i.bak -e "s|FRONTEND_IMAGE_PLACEHOLDER|$frontend_image|g" -e "s|NODE_SCHEDULER_IMAGE_PLACEHOLDER|$node_scheduler_image|g" -e "s|DB_FRONTEND|$DB_FRONTEND|g" -e "s|DB_BACKEND|$DB_BACKEND|g" $DOCKER_COMPOSE_REACT_FILE
-echo "Updated $DOCKER_COMPOSE_REACT_FILE with frontend image: $frontend_image, node-scheduler image: $node_scheduler_image, DB_FRONTEND: $DB_FRONTEND, and DB_BACKEND: $DB_BACKEND"
+sed -i.bak -e "s|FRONTEND_IMAGE_PLACEHOLDER|$frontend_image|g" -e "s|NODE_SCHEDULER_IMAGE_PLACEHOLDER|$node_scheduler_image|g" -e "s|FRONTEND_PORT_PLACEHOLDER|$FRONTEND_PORT|g" -e "s|BACKEND_PORT_PLACEHOLDER|$BACKEND_PORT|g" $DOCKER_COMPOSE_REACT_FILE
+echo "Updated $DOCKER_COMPOSE_REACT_FILE with frontend image: $frontend_image, node-scheduler image: $node_scheduler_image, FRONTEND_PORT: $FRONTEND_PORT, and BACKEND_PORT: $BACKEND_PORT"
 
 # Navigate to nginxproxy folder and run docker-compose
 cd /root/react-nodejs-nginx-deployment/nginxproxy || exit 1  # Exit if cd fails

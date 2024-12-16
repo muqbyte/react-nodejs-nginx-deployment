@@ -9,7 +9,7 @@ services:
     environment:
       TZ: Asia/Kuala_Lumpur
     ports:
-      - "${DB_FRONTEND}:8600"  
+      - "FRONTEND_PORT_PLACEHOLDER:8600"  # Placeholders for port numbers
     networks:
       - nginxproxy_default
 
@@ -22,7 +22,7 @@ services:
     environment:
       TZ: Asia/Kuala_Lumpur
     ports:
-      - "${DB_BACKEND}:3200"  
+      - "BACKEND_PORT_PLACEHOLDER:3200"  # Placeholders for port numbers
     networks:
       - default
 
