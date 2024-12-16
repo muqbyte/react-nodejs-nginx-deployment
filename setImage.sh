@@ -26,7 +26,17 @@ if [ ! -f ".env" ]; then
 fi
 
 # Load environment variables from .env file
-export $(grep -v '^#' .env | xargs)
+set -o allexport
+source .env
+set -o allexport -
+
+# Alternatively, load and export environment variables
+# source .env
+# export $(grep -v '^#' .env | xargs)
+
+# Check if the environment variables are correctly loaded
+echo "DB_FRONTEND=$DB_FRONTEND"
+echo "DB_BACKEND=$DB_BACKEND"
 
 # Prompt for Docker images
 read -p "Enter the Docker image for frontend: " frontend_image
